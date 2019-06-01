@@ -25,8 +25,10 @@
 #include <grpc/impl/codegen/gpr_types.h>
 #include <grpc/impl/codegen/slice.h>
 #include <grpc/impl/codegen/status.h>
+#include <grpc/impl/codegen/sync_generic.h>
 
 #include <stddef.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +73,22 @@ typedef struct grpc_call grpc_call;
 
 /** The Socket Mutator interface allows changes on socket options */
 typedef struct grpc_socket_mutator grpc_socket_mutator;
+
+/** The virtual table of grpc_socket_mutator */
+typedef struct {
+  /** Mutates the socket options of \a fd */
+  bool (*mutate_fd)(int fd, grpc_socket_mutator* mutator);
+  /** Compare socket mutator \a a and \a b */
+  int (*compare)(grpc_socket_mutator* a, grpc_socket_mutator* b);
+  /** Destroys the socket mutator instance */
+  void (*destroy)(grpc_socket_mutator* mutator);
+} grpc_socket_mutator_vtable;
+
+/** The Socket Mutator interface allows changes on socket options */
+struct grpc_socket_mutator {
+  const grpc_socket_mutator_vtable* vtable;
+  gpr_refcount refcount;
+};
 
 /** The Socket Factory interface creates and binds sockets */
 typedef struct grpc_socket_factory grpc_socket_factory;

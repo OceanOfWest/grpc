@@ -531,6 +531,13 @@ GRPCAPI char* grpc_channelz_get_subchannel(intptr_t subchannel_id);
    is allocated and must be freed by the application. */
 GRPCAPI char* grpc_channelz_get_socket(intptr_t socket_id);
 
+/** called by concrete implementations to initialize the base struct */
+void grpc_socket_mutator_init(grpc_socket_mutator* mutator,
+                              const grpc_socket_mutator_vtable* vtable);
+
+/** Wrap \a mutator as a grpc_arg */
+grpc_arg grpc_socket_mutator_to_arg(grpc_socket_mutator* mutator);
+
 #ifdef __cplusplus
 }
 #endif
